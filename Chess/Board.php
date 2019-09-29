@@ -59,7 +59,7 @@ class Board
      */
     public function movePiece(Piece $piece, Position $targetPos): bool
     {
-        if (!MoveChecker::isValidMoveForPiece($this, $piece, $targetPos)) {
+        if (!$this->isValidMoveForPiece($piece, $targetPos)) {
             return false;
         }
 
@@ -72,6 +72,23 @@ class Board
         $this->_move($oldPos, $piece, $targetPos);
 
         return true;
+    }
+
+    /**
+     * Return whether target is a valid move for Piece
+     *
+     * @param \Chess\Pieces\Piece $piece
+     * @param \Chess\Position     $target
+     *
+     * @return bool
+     */
+    public function isValidMoveForPiece(Piece $piece, Position $target): bool
+    {
+        if (Position::in_array($target, $piece->getAllowedMovements($this))) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -110,12 +127,39 @@ class Board
     }
 
     /**
+     * Set Piece to Position on Board
+     *
      * @param Piece|null $piece
      * @param Position   $position
      */
     protected function _setPieceToPosition(?Piece $piece, Position $position): void
     {
         $this->_board[ $position->getX() ][ $position->getY() ] = $piece;
+    }
+
+    /**
+     * Check a straight line
+     *
+     * @param \Chess\Position $position
+     * @param string          $direction
+     *
+     * @return \Chess\Position[]|array
+     */
+    public function checkLine(Position $position, string $direction): array
+    {
+        $line = [];
+        $pos = $position->{$direction}();
+        if ($pos) {
+            $piece = $this->queryPos($pos);
+            if ($piece) {
+                return [$pos];
+            }
+
+            $line[] = $pos;
+            $line = array_merge($line, self::checkLine($pos, $direction));
+        }
+
+        return $line;
     }
 
     /**
@@ -163,12 +207,12 @@ class Board
         $data = [];
 
         foreach (range('a', 'h') as $y => $letter) {
-            $data[0][ $y + 1 ] = $colors->getColoredString($letter, 'white');
+            $data[0][ $y + 1 ] = $colors->getColoredString($letter, 'black');
         }
 
         foreach ($this->_board as $x => $row) {
             $str = (string) self::SIZE - $x;
-            $data[ $x + 1 ][0] = $colors->getColoredString($str, 'white');
+            $data[ $x + 1 ][0] = $colors->getColoredString($str, 'black');
             /**
              * @var Piece $piece
              */
@@ -182,19 +226,19 @@ class Board
                     $str = $colors->getColoredString($str, $color);
                     $data[ $x + 1 ][ $y + 1 ] = $str;
                 } else {
-                    $str = $colors->getColoredString('[]', 'white');
+                    $str = $colors->getColoredString('[  ]', 'black');
                     $data[ $x + 1 ][ $y + 1 ] = $str;
                 }
             }
-            $data[ $x + 1 ][ self::SIZE + 1 ] = $colors->getColoredString((string) self::SIZE - $x, 'white');
+            $data[ $x + 1 ][ self::SIZE + 1 ] = $colors->getColoredString((string) self::SIZE - $x, 'black');
             ksort($data[ $x ], SORT_ASC + SORT_NUMERIC);
         }
 
         foreach (range('a', 'h') as $y => $letter) {
-            $data[ self::SIZE + 1 ][ $y + 1 ] = $colors->getColoredString($letter, 'white');
+            $data[ self::SIZE + 1 ][ $y + 1 ] = $colors->getColoredString($letter, 'black');
         }
 
-        $str = $colors->getColoredString('#', 'white');
+        $str = $colors->getColoredString('#', 'black');
         $data[ self::SIZE + 1 ][ self::SIZE + 1 ] = $str;
         $data[ self::SIZE + 1 ][0] = $str;
         $data[0][ self::SIZE + 1 ] = $str;

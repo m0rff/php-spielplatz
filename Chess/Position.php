@@ -10,6 +10,10 @@ use InvalidArgumentException;
  */
 class Position
 {
+    public const LEFT = 'left';
+    public const RIGHT = 'right';
+    public const FORWARD = 'forward';
+    public const BACK = 'back';
 
     /**
      * @var int $_x
@@ -41,12 +45,42 @@ class Position
     public static function in_array(Position $target, array $movements): bool
     {
         foreach ($movements as $movement) {
-            if ($movement->getChessString() === $target->getChessString()) {
+            if ($movement->equals($target)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * @param \Chess\Position $pos
+     *
+     * @return bool
+     */
+    public function equals(Position $pos): bool
+    {
+        return $pos->getX() === $this->_x && $pos->getY() === $this->_y;
+    }
+
+    /**
+     * Return x
+     *
+     * @return int
+     */
+    public function getX(): int
+    {
+        return $this->_x;
+    }
+
+    /**
+     * Return y
+     *
+     * @return int
+     */
+    public function getY(): int
+    {
+        return $this->_y;
     }
 
     /**
@@ -196,52 +230,6 @@ class Position
     }
 
     /**
-     * Return x
-     *
-     * @return int
-     */
-    public function getX(): int
-    {
-        return $this->_x;
-    }
-
-    /**
-     * Set x
-     *
-     * @param int $x
-     *
-     * @return Position
-     */
-    public function setX(int $x): Position
-    {
-        $this->_x = $x;
-        return $this;
-    }
-
-    /**
-     * Return y
-     *
-     * @return int
-     */
-    public function getY(): int
-    {
-        return $this->_y;
-    }
-
-    /**
-     * Set y
-     *
-     * @param int $y
-     *
-     * @return Position
-     */
-    public function setY(int $y): Position
-    {
-        $this->_y = $y;
-        return $this;
-    }
-
-    /**
      * @param int $n
      *
      * @return \Chess\Position|null
@@ -304,4 +292,5 @@ class Position
 
         return PositionFactory::factory($x, $this->_y);
     }
+
 }

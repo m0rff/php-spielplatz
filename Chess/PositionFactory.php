@@ -49,7 +49,7 @@ class PositionFactory
      *
      * @return array
      */
-    public function lineFromTo(Position $from, Position $to): array
+    public static function lineFromTo(Position $from, Position $to): array
     {
         return [];
     }

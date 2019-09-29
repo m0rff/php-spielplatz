@@ -4,9 +4,7 @@ declare(strict_types=1);
 namespace Chess\Pieces;
 
 use Chess\Board;
-use Chess\MoveChecker;
 use Chess\Position;
-use Chess\PositionFactory;
 
 /**
  * Class Rook
@@ -23,41 +21,52 @@ class Rook extends Piece
     /** @inheritDoc */
     public function getAllowedMovements(Board $board): array
     {
-        $left = MoveChecker::checkLine($this->getPosition(), $board, MoveChecker::LEFT);
-        $right = MoveChecker::checkLine($this->getPosition(), $board, MoveChecker::RIGHT);
-        $forward = MoveChecker::checkLine($this->getPosition(), $board, MoveChecker::FORWARD);
-        $back = MoveChecker::checkLine($this->getPosition(), $board, MoveChecker::BACK);
+        $positions = [];
 
+        if ($leftLine = $board->checkLine($this->getPosition(), Position::LEFT)) {
+            $positions[] = $this->_checkRookLine($leftLine, $board, Position::LEFT);
+        }
 
-        $positions[] = $this->_check($this->getPosition(), $left, $board, MoveChecker::LEFT);
-        $positions[] = $this->_check($this->getPosition(), $right, $board, MoveChecker::RIGHT);
-        $positions[] = $this->_check($this->getPosition(), $forward, $board, MoveChecker::FORWARD);
-        $positions[] = $this->_check($this->getPosition(), $back, $board, MoveChecker::BACK);
+        if ($rightLine = $board->checkLine($this->getPosition(), Position::RIGHT)) {
+            $positions[] = $this->_checkRookLine($rightLine, $board, Position::RIGHT);
+        }
 
-        $positions = array_merge($positions);
+        if ($forwardLine = $board->checkLine($this->getPosition(), Position::FORWARD)) {
+            $positions[] = $this->_checkRookLine($forwardLine, $board, Position::FORWARD);
+        }
+
+        if ($backLine = $board->checkLine($this->getPosition(), Position::BACK)) {
+            $positions[] = $this->_checkRookLine($backLine, $board, Position::BACK);
+        }
+
+        $positions = array_filter(array_merge(...$positions));
 
         return $positions;
     }
 
     /**
-     * @param \Chess\Position      $pos
-     * @param \Chess\Position|null $target
-     * @param \Chess\Board         $board
-     * @param string               $direction
+     * @param array        $line
+     * @param \Chess\Board $board
+     * @param string       $direction
      *
-     * @return \Chess\Position|null
+     * @return \Chess\Position[]
      */
-    protected function _check(Position $pos, ?Position $target, Board $board, string $direction): ?Position
+    protected function _checkRookLine(array $line, Board $board, string $direction): array
     {
-        if ($pos !== null) {
-            $check = $board->queryPos($pos);
-            if ($check && $check->isEnemey($this->getPlayer())) {
-                return $pos;
-            } elseif ($check) {
-                return $pos[ $direction ]();
-            } else {
-                return PositionFactory::lineFromTo($pos, $target);
+        foreach ($line as $i => $position) {
+            if ($position) {
+                $piece = $board->queryPos($position);
+                if ($piece) {
+                    $l = $i - 1;
+                    if ($piece->isEnemey($this->getPlayer())) {
+                        $l = $i;
+                    }
+
+                    return array_slice($line, 0, $l);
+                }
             }
         }
+
+        return [];
     }
 }
