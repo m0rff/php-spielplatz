@@ -24,19 +24,19 @@ class Rook extends Piece
         $positions = [];
 
         if ($leftLine = $board->checkLine($this->getPosition(), Position::LEFT)) {
-            $positions[] = $this->_checkRookLine($leftLine, $board, Position::LEFT);
+            $positions[] = $this->_checkRookLine($leftLine, $board);
         }
 
         if ($rightLine = $board->checkLine($this->getPosition(), Position::RIGHT)) {
-            $positions[] = $this->_checkRookLine($rightLine, $board, Position::RIGHT);
+            $positions[] = $this->_checkRookLine($rightLine, $board);
         }
 
         if ($forwardLine = $board->checkLine($this->getPosition(), Position::FORWARD)) {
-            $positions[] = $this->_checkRookLine($forwardLine, $board, Position::FORWARD);
+            $positions[] = $this->_checkRookLine($forwardLine, $board);
         }
 
         if ($backLine = $board->checkLine($this->getPosition(), Position::BACK)) {
-            $positions[] = $this->_checkRookLine($backLine, $board, Position::BACK);
+            $positions[] = $this->_checkRookLine($backLine, $board);
         }
 
         $positions = array_filter(array_merge(...$positions));
@@ -47,19 +47,18 @@ class Rook extends Piece
     /**
      * @param array        $line
      * @param \Chess\Board $board
-     * @param string       $direction
      *
      * @return \Chess\Position[]
      */
-    protected function _checkRookLine(array $line, Board $board, string $direction): array
+    protected function _checkRookLine(array $line, Board $board): array
     {
         foreach ($line as $i => $position) {
             if ($position) {
                 $piece = $board->queryPos($position);
                 if ($piece) {
-                    $l = $i - 1;
+                    $l = $i;
                     if ($piece->isEnemey($this->getPlayer())) {
-                        $l = $i;
+                        $l = $i + 1;
                     }
 
                     return array_slice($line, 0, $l);

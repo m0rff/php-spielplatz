@@ -31,11 +31,17 @@ class Board
     protected $_graveyard;
 
     /**
+     * @var Piece[] $_history
+     */
+    protected $_history;
+
+    /**
      * Board constructor.
      */
     public function __construct()
     {
         $this->_generateBoard();
+        $this->_history = [];
     }
 
     /**
@@ -70,6 +76,7 @@ class Board
         $oldPos = $piece->getPosition();
         $piece->move($targetPos);
         $this->_move($oldPos, $piece, $targetPos);
+        $this->_history[] = $piece;
 
         return true;
     }
@@ -207,45 +214,44 @@ class Board
         $data = [];
 
         foreach (range('a', 'h') as $y => $letter) {
-            $data[0][ $y + 1 ] = $colors->getColoredString($letter, 'black');
+            $data[0][ $y + 1 ] = $letter;
         }
 
         foreach ($this->_board as $x => $row) {
             $str = (string) self::SIZE - $x;
-            $data[ $x + 1 ][0] = $colors->getColoredString($str, 'black');
+            $data[ $x + 1 ][0] = $str;
             /**
              * @var Piece $piece
              */
             foreach ($row as $y => $piece) {
                 if ($piece !== null) {
                     $str = $piece->getShortType() . '' . $piece->getPlayer()->getShortColor();
-                    $color = 'blue';
-                    if ($piece->getPlayer()->getColor() === Player::WHITE) {
-                        $color = 'yellow';
-                    }
-                    $str = $colors->getColoredString($str, $color);
                     $data[ $x + 1 ][ $y + 1 ] = $str;
                 } else {
-                    $str = $colors->getColoredString('[  ]', 'black');
-                    $data[ $x + 1 ][ $y + 1 ] = $str;
+                    $data[ $x + 1 ][ $y + 1 ] = '[]';
                 }
             }
-            $data[ $x + 1 ][ self::SIZE + 1 ] = $colors->getColoredString((string) self::SIZE - $x, 'black');
+            $data[ $x + 1 ][ self::SIZE + 1 ] = (string) self::SIZE - $x;
+            
             ksort($data[ $x ], SORT_ASC + SORT_NUMERIC);
         }
 
         foreach (range('a', 'h') as $y => $letter) {
-            $data[ self::SIZE + 1 ][ $y + 1 ] = $colors->getColoredString($letter, 'black');
+            $data[ self::SIZE + 1 ][ $y + 1 ] = $letter;
+
         }
 
-        $str = $colors->getColoredString('#', 'black');
+        $str = '#';
         $data[ self::SIZE + 1 ][ self::SIZE + 1 ] = $str;
         $data[ self::SIZE + 1 ][0] = $str;
         $data[0][ self::SIZE + 1 ] = $str;
         $data[0][0] = $str;
 
+        ksort($data[0], SORT_ASC + SORT_NUMERIC);
+
         ksort($data[ self::SIZE + 1 ], SORT_ASC + SORT_NUMERIC);
 
         $climate->table($data);
+
     }
 }

@@ -8,7 +8,7 @@ use InvalidArgumentException;
 /**
  * Class Position
  */
-class Position
+class Position extends PositionFactory
 {
     public const LEFT = 'left';
     public const RIGHT = 'right';
@@ -292,5 +292,4 @@ class Position
 
         return PositionFactory::factory($x, $this->_y);
     }
-
 }
