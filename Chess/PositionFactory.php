@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Chess;
+namespace App\Lib\Chess;
 
 /**
  * Class PositionFactory
@@ -11,7 +11,7 @@ class PositionFactory
     /**
      * Factory
      *
-     * @return Position
+     * @return \App\Lib\Chess\Position
      */
     public static function factory(): Position
     {
@@ -41,16 +41,5 @@ class PositionFactory
 
 
         return $pos;
-    }
-
-    /**
-     * @param \Chess\Position $from
-     * @param \Chess\Position $to
-     *
-     * @return array
-     */
-    public static function lineFromTo(Position $from, Position $to): array
-    {
-        return [];
     }
 }

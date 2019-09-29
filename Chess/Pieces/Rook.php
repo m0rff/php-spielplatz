@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Chess\Pieces;
+namespace App\Lib\Chess\Pieces;
 
-use Chess\Board;
-use Chess\Position;
+use App\Lib\Chess\Board;
+use App\Lib\Chess\Position;
 
 /**
  * Class Rook
@@ -45,10 +45,10 @@ class Rook extends Piece
     }
 
     /**
-     * @param array        $line
-     * @param \Chess\Board $board
+     * @param array                $line
+     * @param \App\Lib\Chess\Board $board
      *
-     * @return \Chess\Position[]
+     * @return \App\Lib\Chess\Position[]
      */
     protected function _checkRookLine(array $line, Board $board): array
     {

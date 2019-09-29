@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Chess\Pieces;
+namespace App\Lib\Chess\Pieces;
 
-use Chess\Player;
-use Chess\Position;
+use App\Lib\Chess\Player;
+use App\Lib\Chess\Position;
 
 /**
  * Class PieceFactory
@@ -27,10 +27,10 @@ class PieceFactory
     /**
      * Piece Factory
      *
-     * @param string        $type
-     * @param Position      $pos
+     * @param string                  $type
+     * @param \App\Lib\Chess\Position $pos
      *
-     * @param \Chess\Player $player
+     * @param \App\Lib\Chess\Player   $player
      *
      * @return Piece
      */

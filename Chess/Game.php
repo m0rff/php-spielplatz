@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Chess;
+namespace App\Lib\Chess;
 
 use RuntimeException;
 
@@ -11,12 +11,19 @@ use RuntimeException;
 class Game
 {
     /**
-     * @var Player[]
+     * @var \App\Lib\Chess\Player[]
      */
     protected $_players;
-
     /**
-     * @var Board
+     * @var \App\Lib\Chess\Player
+     */
+    protected $_currentPlayer;
+    /**
+     * @var string
+     */
+    protected $_gameId;
+    /**
+     * @var \App\Lib\Chess\Board
      */
     private $_board;
 
@@ -29,15 +36,11 @@ class Game
 
         $this->_board = new Board();
         $this->_board->initGame($this);
-    }
-
-    public function play(): void
-    {
-        // do stuff
+        $this->_currentPlayer = $this->_players[ Player::WHITE ];
     }
 
     /**
-     * @return Player[]
+     * @return \App\Lib\Chess\Player[]
      */
     public function getPlayers(): array
     {
@@ -45,7 +48,7 @@ class Game
     }
 
     /**
-     * @return Player
+     * @return \App\Lib\Chess\Player
      */
     public function getWhite(): Player
     {
@@ -53,11 +56,25 @@ class Game
     }
 
     /**
-     * @return Player
+     * @return \App\Lib\Chess\Player
      */
     public function getBlack(): Player
     {
         return $this->_players[ Player::BLACK ];
+    }
+
+    /**
+     * @param \App\Lib\Chess\Player $p
+     * @param string                $pos
+     * @param string                $target
+     */
+    public function playerMove(Player $p, string $pos, string $target)
+    {
+        if ($p->getColor() !== $this->_currentPlayer->getColor()) {
+            throw new RuntimeException('Not your turn.');
+        }
+
+        $this->move($pos, $target);
     }
 
     /**
@@ -69,20 +86,20 @@ class Game
         $pos = PositionFactory::factory($piecePos);
         $target = PositionFactory::factory($targetPos);
 
-        $piece = $this->getBoard()->queryPos($pos);
+        $piece = $this->getBoardInstance()->queryPos($pos);
         if (!$piece) {
-            throw new RuntimeException('Invalid move');
+            throw new RuntimeException('Invalid piece.');
         }
 
-        if (!$this->getBoard()->movePiece($piece, $target)) {
-            throw new RuntimeException('Invalid move');
+        if (!$this->getBoardInstance()->movePiece($piece, $target)) {
+            throw new RuntimeException('Invalid move.');
         }
     }
 
     /**
-     * @return Board
+     * @return \App\Lib\Chess\Board
      */
-    public function getBoard(): Board
+    public function getBoardInstance(): Board
     {
         return $this->_board;
     }

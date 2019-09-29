@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Chess;
+namespace App\Lib\Chess;
 
-use Chess\Pieces\Piece;
+use App\Lib\Chess\Pieces\Piece;
 
 /**
  * Class ChessConstants

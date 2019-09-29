@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Chess\Pieces;
+namespace App\Lib\Chess\Pieces;
 
-use Chess\Board;
-use Chess\Player;
-use Chess\Position;
+use App\Lib\Chess\Board;
+use App\Lib\Chess\Player;
+use App\Lib\Chess\Position;
 
 /**
  * Interface PieceInterface
@@ -13,14 +13,14 @@ use Chess\Position;
 interface PieceInterface
 {
     /**
-     * @param Position $target
+     * @param \App\Lib\Chess\Position $target
      *
      * @return void
      */
     public function move(Position $target): void;
 
     /**
-     * @return Position
+     * @return \App\Lib\Chess\Position
      */
     public function getPosition(): Position;
 
@@ -35,21 +35,21 @@ interface PieceInterface
     public function getSpecialMovement(): array;
 
     /**
-     * @param \Chess\Board $board
+     * @param \App\Lib\Chess\Board $board
      *
      * @return Position[]
      */
     public function getAllowedMovements(Board $board): array;
 
     /**
-     * @param Position $position
+     * @param \App\Lib\Chess\Position $position
      *
      * @return Piece
      */
     public function setPosition(Position $position): Piece;
 
     /**
-     * @return Player
+     * @return \App\Lib\Chess\Player
      */
     public function getPlayer(): Player;
 
@@ -59,7 +59,7 @@ interface PieceInterface
     public function onStartPosition(): bool;
 
     /**
-     * @param \Chess\Player $player
+     * @param \App\Lib\Chess\Player $player
      *
      * @return bool
      */

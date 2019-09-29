@@ -1,19 +1,19 @@
 <?php
 declare(strict_types=1);
 
-namespace Chess;
+namespace App\Lib\Chess;
 
-use Chess\Pieces\Piece;
-use Chess\Pieces\PieceFactory;
-use League\CLImate\CLImate;
+use App\Lib\Chess\Pieces\Piece;
+use App\Lib\Chess\Pieces\PieceFactory;
+use JsonSerializable;
 
 /**
  * Class Board
  *
- * @property  Piece[] $_board
- * @property  Piece[] $_graveyard
+ * @property  Piece[][] $_board
+ * @property  Piece[]   $_graveyard
  */
-class Board
+class Board implements JsonSerializable
 {
     /**
      * Board size
@@ -21,7 +21,7 @@ class Board
     public const SIZE = 8;
 
     /**
-     * @var array Piece[]
+     * @var array Piece[][]
      */
     protected $_board;
 
@@ -84,8 +84,8 @@ class Board
     /**
      * Return whether target is a valid move for Piece
      *
-     * @param \Chess\Pieces\Piece $piece
-     * @param \Chess\Position     $target
+     * @param \App\Lib\Chess\Pieces\Piece $piece
+     * @param \App\Lib\Chess\Position     $target
      *
      * @return bool
      */
@@ -123,9 +123,9 @@ class Board
     /**
      * Move piece
      *
-     * @param Position $oldPos
-     * @param Piece    $piece
-     * @param Position $target
+     * @param \App\Lib\Chess\Position     $oldPos
+     * @param \App\Lib\Chess\Pieces\Piece $piece
+     * @param \App\Lib\Chess\Position     $target
      */
     protected function _move(Position $oldPos, Piece $piece, Position $target): void
     {
@@ -136,8 +136,8 @@ class Board
     /**
      * Set Piece to Position on Board
      *
-     * @param Piece|null $piece
-     * @param Position   $position
+     * @param \App\Lib\Chess\Pieces\Piece|null $piece
+     * @param \App\Lib\Chess\Position          $position
      */
     protected function _setPieceToPosition(?Piece $piece, Position $position): void
     {
@@ -209,8 +209,6 @@ class Board
      */
     public function print(): void
     {
-        $climate = new CLImate;
-        $colors = new Colors();
         $data = [];
 
         foreach (range('a', 'h') as $y => $letter) {
@@ -232,7 +230,7 @@ class Board
                 }
             }
             $data[ $x + 1 ][ self::SIZE + 1 ] = (string) self::SIZE - $x;
-            
+
             ksort($data[ $x ], SORT_ASC + SORT_NUMERIC);
         }
 
@@ -248,10 +246,38 @@ class Board
         $data[0][0] = $str;
 
         ksort($data[0], SORT_ASC + SORT_NUMERIC);
-
         ksort($data[ self::SIZE + 1 ], SORT_ASC + SORT_NUMERIC);
+    }
 
-        $climate->table($data);
+    /**
+     * Specify data which should be serialized to JSON
+     *
+     * @link  https://php.net/manual/en/jsonserializable.jsonserialize.php
+     * @return mixed data which can be serialized by <b>json_encode</b>,
+     * which is a value of any type other than a resource.
+     * @since 5.4.0
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'board'     => $this->getBoardData(),
+            'graveyard' => $this->getGraveyard(),
+        ];
+    }
 
+    /**
+     * @return array
+     */
+    public function getBoardData(): array
+    {
+        return $this->_board;
+    }
+
+    /**
+     * @return \App\Lib\Chess\Pieces\Piece[]
+     */
+    public function getGraveyard(): array
+    {
+        return $this->_graveyard;
     }
 }

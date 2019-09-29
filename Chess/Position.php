@@ -1,19 +1,25 @@
 <?php
 declare(strict_types=1);
 
-namespace Chess;
+namespace App\Lib\Chess;
 
 use InvalidArgumentException;
+use JsonSerializable;
 
 /**
  * Class Position
  */
-class Position extends PositionFactory
+class Position extends PositionFactory implements JsonSerializable
 {
     public const LEFT = 'left';
     public const RIGHT = 'right';
     public const FORWARD = 'forward';
     public const BACK = 'back';
+    public const FORWARD_LEFT = 'forwardleft';
+    public const FORWARD_RIGHT = 'forwardleft';
+    public const BACK_LEFT = 'backleft';
+    public const BACK_RIGHT = 'backright';
+    public const FORWARD_2 = 'forwardtwo';
 
     /**
      * @var int $_x
@@ -37,8 +43,8 @@ class Position extends PositionFactory
     protected $_chessYChar;
 
     /**
-     * @param \Chess\Position   $target
-     * @param \Chess\Position[] $movements
+     * @param \App\Lib\Chess\Position   $target
+     * @param \App\Lib\Chess\Position[] $movements
      *
      * @return bool
      */
@@ -54,7 +60,7 @@ class Position extends PositionFactory
     }
 
     /**
-     * @param \Chess\Position $pos
+     * @param \App\Lib\Chess\Position $pos
      *
      * @return bool
      */
@@ -81,16 +87,6 @@ class Position extends PositionFactory
     public function getY(): int
     {
         return $this->_y;
-    }
-
-    /**
-     * Return chess coords
-     *
-     * @return string
-     */
-    public function getChessString(): string
-    {
-        return $this->_chessYChar . $this->_chessXInt;
     }
 
     /**
@@ -278,6 +274,15 @@ class Position extends PositionFactory
     }
 
     /**
+     *
+     * @return \Chess\Position|null
+     */
+    public function forwardtwo(): ?Position
+    {
+        return $this->forward(2);
+    }
+
+    /**
      * @param int $n
      *
      * @return \Chess\Position|null
@@ -291,5 +296,57 @@ class Position extends PositionFactory
         }
 
         return PositionFactory::factory($x, $this->_y);
+    }
+
+    /**
+     * @return \App\Lib\Chess\Position|null
+     */
+    public function forwardleft(): ?Position
+    {
+        $x = $this->_x - 1;
+        $y = $this->_y + 1;
+
+        if ($y < 0 || $x < 0) {
+            return null;
+        }
+
+        return PositionFactory::factory($x, $y);
+    }
+
+    /**
+     * @return \App\Lib\Chess\Position|null
+     */
+    public function forwardright(): ?Position
+    {
+        $x = $this->_x - 1;
+        $y = $this->_y - 1;
+
+        if ($y > Board::SIZE - 1 || $x < 0) {
+            return null;
+        }
+
+        return PositionFactory::factory($x, $y);
+    }
+
+    /**
+     * @return array|mixed
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'x' => $this->getX(),
+            'y' => $this->gety(),
+            's' => $this->getChessString(),
+        ];
+    }
+
+    /**
+     * Return chess coords
+     *
+     * @return string
+     */
+    public function getChessString(): string
+    {
+        return $this->_chessYChar . $this->_chessXInt;
     }
 }

@@ -1,16 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace Chess\Pieces;
+namespace App\Lib\Chess\Pieces;
 
-use Chess\Board;
-use Chess\Player;
-use Chess\Position;
+use App\Lib\Chess\Board;
+use App\Lib\Chess\Player;
+use App\Lib\Chess\Position;
+use JsonSerializable;
 
 /**
  * Class Piece
  */
-abstract class Piece implements PieceInterface
+abstract class Piece implements PieceInterface, JsonSerializable
 {
     public const TYPE_PAWN = 'pawn';
     public const TYPE_KING = 'king';
@@ -20,7 +21,7 @@ abstract class Piece implements PieceInterface
     public const TYPE_ROOK = 'rook';
 
     /**
-     * @var Position $_position
+     * @var \App\Lib\Chess\Position $_position
      */
     protected $_position;
 
@@ -35,7 +36,7 @@ abstract class Piece implements PieceInterface
     protected $_history;
 
     /**
-     * @var Player $_player
+     * @var \App\Lib\Chess\Player $_player
      */
     protected $_player;
 
@@ -52,7 +53,8 @@ abstract class Piece implements PieceInterface
         $this->_player = $player;
         $class = get_class($this);
         $names = explode('\\', $class);
-        $this->_type = $names[2];
+        $name = end($names);
+        $this->_type = strtolower($name);
     }
 
     /** @inheritDoc */
@@ -74,12 +76,6 @@ abstract class Piece implements PieceInterface
         $this->_position = $position;
 
         return $this;
-    }
-
-    /** @inheritDoc */
-    public function getType(): string
-    {
-        return $this->_type;
     }
 
     /**
@@ -112,5 +108,20 @@ abstract class Piece implements PieceInterface
     public function getPlayer(): Player
     {
         return $this->_player;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'player'   => $this->getPlayer()->getColor(),
+            'position' => $this->getPosition(),
+            'type'     => $this->getType(),
+        ];
+    }
+
+    /** @inheritDoc */
+    public function getType(): string
+    {
+        return $this->_type;
     }
 }

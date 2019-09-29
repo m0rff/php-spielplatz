@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Chess\Pieces;
+namespace App\Lib\Chess\Pieces;
 
-use Chess\Board;
+use App\Lib\Chess\Board;
 
 /**
  * Class Knight
@@ -20,6 +20,6 @@ class Knight extends Piece
     /** @inheritDoc */
     public function getAllowedMovements(Board $board): array
     {
-        return [];
+        $movements = [];
     }
 }

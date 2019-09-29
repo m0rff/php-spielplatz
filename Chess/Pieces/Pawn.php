@@ -1,15 +1,26 @@
 <?php
 declare(strict_types=1);
 
-namespace Chess\Pieces;
+namespace App\Lib\Chess\Pieces;
 
-use Chess\Board;
+use App\Lib\Chess\Board;
+use App\Lib\Chess\Position;
 
 /**
  * Class Pawn
  */
 class Pawn extends Piece
 {
+
+    /**
+     * @param \App\Lib\Chess\Pieces\Piece|null $piece
+     *
+     * @return bool
+     */
+    protected static function _checkForward(?Piece $piece): bool
+    {
+        return $piece === null;
+    }
 
     /** @inheritDoc */
     public function getSpecialMovement(): array
@@ -22,63 +33,99 @@ class Pawn extends Piece
     {
         $movements = [];
 
-        $posLeft = $this->getPosition()->left();
-        if ($posLeft) {
-            $checkLeft = $board->queryPos($posLeft);
-            if ($checkLeft && $checkLeft->getPlayer()->getColor() !== $this->getPlayer()->getColor()) {
-                $movements[] = $posLeft;
-            }
-        }
-
-        $posRight = $this->getPosition()->right();
-        if ($posRight) {
-            $checkRight = $board->queryPos($posRight);
-            if ($checkRight && $checkRight->getPlayer()->getColor() !== $this->getPlayer()->getColor()) {
-                $movements[] = $posRight;
-            }
-        }
-
-        $posForward = $this->getPosition()->forward();
+        $posForward = $this->_checkPawn($board, Position::FORWARD);
         if ($posForward) {
-            $checkForward = $board->queryPos($posForward);
-            if ($checkForward === null
-                || ($checkForward
-                    && $checkForward->getPlayer()->getColor() !== $this->getPlayer()->getColor())
-            ) {
-                $movements[] = $posForward;
-            }
+            $movements[] = $posForward;
 
             if ($this->onStartPosition()) {
-                $pos2Forward = $posForward->forward();
+                $pos2Forward = $this->_checkPawn($board, Position::FORWARD_2);
                 if ($pos2Forward) {
-                    $check2Forward = $board->queryPos($pos2Forward);
-                    if ($check2Forward === null
-                        || ($check2Forward
-                            && $check2Forward->getPlayer()->getColor() !== $this->getPlayer()->getColor())
-                    ) {
-                        $movements[] = $pos2Forward;
-                    }
+                    $movements[] = $pos2Forward;
                 }
             }
         }
 
-
-        $posForwardLeft = $posForward->left();
-        if ($posForwardLeft) {
-            $checkForwardLeft = $board->queryPos($posForwardLeft);
-            if ($checkForwardLeft && $checkForwardLeft->getPlayer()->getColor() !== $this->getPlayer()->getColor()) {
-                $movements[] = $posForwardLeft;
-            }
+        $posForwardRight = $this->_checkPawn($board, Position::FORWARD_RIGHT);
+        if ($posForwardRight) {
+            $movements[] = $posForwardRight;
         }
 
-        $posForwardRight = $posForward->right();
-        if ($posForwardRight) {
-            $checkForwardRight = $board->queryPos($posForwardRight);
-            if ($checkForwardRight && $checkForwardRight->getPlayer()->getColor() !== $this->getPlayer()->getColor()) {
-                $movements[] = $posForwardRight;
-            }
+        $posForwardLeft = $this->_checkPawn($board, Position::FORWARD_LEFT);
+        if ($posForwardLeft) {
+            $movements[] = $posForwardLeft;
         }
 
         return $movements;
+    }
+
+    /**
+     * @param \App\Lib\Chess\Board $board
+     * @param string               $direction
+     *
+     * @return \App\Lib\Chess\Position|null
+     */
+    protected function _checkPawn(Board $board, string $direction): ?Position
+    {
+        $posDirection = $this->getPosition()->{$direction}();
+        if ($posDirection) {
+            $cb = $this->_getCbForDirection($direction);
+
+            $check = $board->queryPos($posDirection);
+            if ($cb($check)) {
+                return $posDirection;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $direction
+     *
+     * @return callable
+     */
+    protected function _getCbForDirection(string $direction): callable
+    {
+        switch ($direction) {
+
+
+            case Position::FORWARD:
+                return [self::class, '_checkForward'];
+            case Position::FORWARD_2:
+                return [$this, '_checkForwardTwo'];
+            case Position::FORWARD_LEFT:
+            case Position::FORWARD_RIGHT:
+                return [$this, '_checkForwardLR'];
+            case Position::BACK:
+            case Position::BACK_LEFT:
+            case Position::BACK_RIGHT:
+            case Position::RIGHT:
+            case Position::LEFT:
+            default:
+                return static function () {
+                    return false;
+                };
+        }
+
+    }
+
+    /**
+     * @param \App\Lib\Chess\Pieces\Piece|null $piece
+     *
+     * @return bool
+     */
+    protected function _checkForwardLR(?Piece $piece): bool
+    {
+        return $piece !== null && $piece->isEnemey($this->getPlayer());
+    }
+
+    /**
+     * @param \App\Lib\Chess\Pieces\Piece|null $piece
+     *
+     * @return bool
+     */
+    protected function _checkForwardTwo(?Piece $piece): bool
+    {
+        return $piece === null;
     }
 }
