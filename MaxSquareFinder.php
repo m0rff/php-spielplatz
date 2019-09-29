@@ -54,7 +54,7 @@ class MaxSquareFinder
             $search = str_repeat('1', $searchLength);
 
             while ($currentRow < $this->_rowCount) {
-                foreach (self::_strpos_all($this->_square[$currentRow], $search) as $pos) {
+                foreach (self::_strpos_all($this->_square[ $currentRow ], $search) as $pos) {
                     if ($this->_checkPosBelow($pos, $currentRow, $searchLength, $search)) {
                         return $searchLength ** 2;
                     }
@@ -70,19 +70,40 @@ class MaxSquareFinder
     }
 
     /**
+     * Find all positions of needle in haystack
+     *
+     * @param string $haystack Haystack
+     * @param string $needle   Needle
+     *
+     * @return array
+     */
+    protected static function _strpos_all(string $haystack, string $needle): array
+    {
+        $offset = 0;
+        $allpos = [];
+        while (($pos = strpos($haystack, $needle, $offset)) !== false) {
+            $offset = $pos + 1;
+            $allpos[] = $pos;
+        }
+
+        return $allpos;
+    }
+
+    /**
      * Checks if square array has size times '1' below given pos/row
      *
-     * @param int $row Row
-     * @param int $pos Pos
-     * @param int $size Size
+     * @param int    $row    Row
+     * @param int    $pos    Pos
+     * @param int    $size   Size
      * @param string $search Search string
+     *
      * @return bool
      */
     protected function _checkPosBelow(int $row, int $pos, int $size, string $search): bool
     {
         $nextRow = $row + 1;
         while ($nextRow < $row + $size) {
-            $rowPos = strpos($this->_square[$nextRow], $search, $pos);
+            $rowPos = strpos($this->_square[ $nextRow ], $search, $pos);
             if ($rowPos !== 0) {
                 return false;
             }
@@ -90,24 +111,5 @@ class MaxSquareFinder
         }
 
         return true;
-    }
-
-    /**
-     * Find all positions of needle in haystack
-     *
-     * @param string $haystack Haystack
-     * @param string $needle Needle
-     * @return array
-     */
-    protected static function _strpos_all(string $haystack, string $needle): array
-    {
-        $offset = 0;
-        $allpos = array();
-        while (($pos = strpos($haystack, $needle, $offset)) !== FALSE) {
-            $offset = $pos + 1;
-            $allpos[] = $pos;
-        }
-
-        return $allpos;
     }
 }

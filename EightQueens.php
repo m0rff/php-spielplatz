@@ -40,6 +40,38 @@ class EightQueens
     }
 
     /**
+     * Generate chess board array
+     */
+    protected function _generateBoard(): void
+    {
+        $this->_board = array_fill(
+            0,
+            self::BOARD_SIZE - 1,
+            array_fill(0, self::BOARD_SIZE - 1, false)
+        );
+
+        foreach ($this->_queens as $queen) {
+            $pos = self::_parsePosition($queen);
+            $this->_board[ $pos['x'] ][ $pos['y'] ] = true;
+        }
+    }
+
+    /**
+     * Convert the queen pos "(2,1)" to x,y coords in an array
+     *
+     * @param string $pos
+     *
+     * @return array
+     */
+    protected static function _parsePosition(string $pos): array
+    {
+        return [
+            'x' => self::BOARD_SIZE - $pos[1],
+            'y' => $pos[3] - 1,
+        ];
+    }
+
+    /**
      * Find queen who hits another or return true if all miss
      *
      * @return string|true
@@ -59,6 +91,7 @@ class EightQueens
      * Returns whether given queen can hit anything
      *
      * @param string $attackingQueen
+     *
      * @return bool
      */
     protected function _checkIfQueenCanHit(string $attackingQueen): bool
@@ -70,12 +103,25 @@ class EightQueens
         return $this->_checkXY($tempBoard, $aPos) || $this->_checkD($tempBoard, $aPos);
     }
 
+    /**
+     * Unsets the queen value at given pos
+     *
+     * @param array $board
+     * @param array $queenPos
+     *
+     * @return void
+     */
+    protected static function _unsetQueen(array &$board, array $queenPos): void
+    {
+        $board[ $queenPos['x'] ][ $queenPos['y'] ] = false;
+    }
 
     /**
      * Horizonal check
      *
      * @param array $tempBoard
      * @param array $pos
+     *
      * @return bool
      */
     protected function _checkXY(array $tempBoard, array $pos): bool
@@ -96,57 +142,14 @@ class EightQueens
     /**
      * Diagonal check
      *
-     * @param $tempBoard
+     * @param       $tempBoard
      * @param array $pos
+     *
      * @return bool
      */
     protected function _checkD($tempBoard, array $pos): bool
     {
 
         return false;
-    }
-
-
-    /**
-     * Generate chess board array
-     */
-    protected function _generateBoard(): void
-    {
-        $this->_board = array_fill(
-            0,
-            self::BOARD_SIZE - 1,
-            array_fill(0, self::BOARD_SIZE - 1, false)
-        );
-
-        foreach ($this->_queens as $queen) {
-            $pos = self::_parsePosition($queen);
-            $this->_board[$pos['x']][$pos['y']] = true;
-        }
-    }
-
-    /**
-     * Convert the queen pos "(2,1)" to x,y coords in an array
-     *
-     * @param string $pos
-     * @return array
-     */
-    protected static function _parsePosition(string $pos): array
-    {
-        return [
-            'x' => self::BOARD_SIZE - $pos[1],
-            'y' => $pos[3] - 1,
-        ];
-    }
-
-    /**
-     * Unsets the queen value at given pos
-     *
-     * @param array $board
-     * @param array $queenPos
-     * @return void
-     */
-    protected static function _unsetQueen(array &$board, array $queenPos): void
-    {
-        $board[$queenPos['x']][$queenPos['y']] = false;
     }
 }

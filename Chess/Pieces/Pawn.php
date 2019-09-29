@@ -11,17 +11,13 @@ use Chess\Board;
 class Pawn extends Piece
 {
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     public function getSpecialMovement(): array
     {
         return [];
     }
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     public function getAllowedMovements(Board $board): array
     {
         $movements = [];
@@ -45,13 +41,27 @@ class Pawn extends Piece
         $posForward = $this->getPosition()->forward();
         if ($posForward) {
             $checkForward = $board->queryPos($posForward);
-            if (
-                $checkForward === null
-                || ($checkForward && $checkForward->getPlayer()->getColor() !== $this->getPlayer()->getColor())
+            if ($checkForward === null
+                || ($checkForward
+                    && $checkForward->getPlayer()->getColor() !== $this->getPlayer()->getColor())
             ) {
                 $movements[] = $posForward;
             }
+
+            if ($this->onStartPosition()) {
+                $pos2Forward = $posForward->forward();
+                if ($pos2Forward) {
+                    $check2Forward = $board->queryPos($pos2Forward);
+                    if ($check2Forward === null
+                        || ($check2Forward
+                            && $check2Forward->getPlayer()->getColor() !== $this->getPlayer()->getColor())
+                    ) {
+                        $movements[] = $pos2Forward;
+                    }
+                }
+            }
         }
+
 
         $posForwardLeft = $posForward->left();
         if ($posForwardLeft) {

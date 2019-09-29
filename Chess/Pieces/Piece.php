@@ -55,26 +55,20 @@ abstract class Piece implements PieceInterface
         $this->_type = $names[2];
     }
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     public function move(Position $target): void
     {
         $this->_history[] = $this->getPosition();
         $this->_position = $target;
     }
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     public function getPosition(): Position
     {
         return $this->_position;
     }
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     public function setPosition(Position $position): Piece
     {
         $this->_position = $position;
@@ -82,9 +76,7 @@ abstract class Piece implements PieceInterface
         return $this;
     }
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     public function getType(): string
     {
         return $this->_type;
@@ -98,19 +90,25 @@ abstract class Piece implements PieceInterface
         return substr($this->_type, 0, 2);
     }
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     abstract public function getSpecialMovement(): array;
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     abstract public function getAllowedMovements(Board $board): array;
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
+    public function onStartPosition(): bool
+    {
+        return empty($this->_history);
+    }
+
+    /** @inheritDoc */
+    public function isEnemey(Player $player): bool
+    {
+        return $this->getPlayer()->getColor() !== $player->getColor();
+    }
+
+    /** @inheritDoc */
     public function getPlayer(): Player
     {
         return $this->_player;

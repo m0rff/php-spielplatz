@@ -42,4 +42,15 @@ class PositionFactory
 
         return $pos;
     }
+
+    /**
+     * @param \Chess\Position $from
+     * @param \Chess\Position $to
+     *
+     * @return array
+     */
+    public function lineFromTo(Position $from, Position $to): array
+    {
+        return [];
+    }
 }

@@ -52,4 +52,16 @@ interface PieceInterface
      * @return Player
      */
     public function getPlayer(): Player;
+
+    /**
+     * @return bool
+     */
+    public function onStartPosition(): bool;
+
+    /**
+     * @param \Chess\Player $player
+     *
+     * @return bool
+     */
+    public function isEnemey(Player $player): bool;
 }

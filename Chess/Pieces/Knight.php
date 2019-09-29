@@ -11,17 +11,13 @@ use Chess\Board;
 class Knight extends Piece
 {
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     public function getSpecialMovement(): array
     {
         return [];
     }
 
-    /**
-     * @inheritDoc
-     */
+    /** @inheritDoc */
     public function getAllowedMovements(Board $board): array
     {
         return [];
